@@ -1,157 +1,101 @@
-import prioqueue
-import copy
-import time
+from bnb import *
+import sys
+from PySide6 import (QtCore, QtWidgets, QtGui)
 
-# state adalah tuple dengan urutan (array 15 puzzle, int distFromRoot, int cost, int idx parent di array done)
+class MyWidget(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
 
-def kurang(num, state):
-    idx = -1
-    for i in range(16):
-        if state[0][i] == num:
-            idx = i
+        self.path = []
+        self.isSolvable = False
+        self.arrSimpulTime = []
+        self.initState = ()
 
-    count = 0
-    for i in range(idx, 16):
-        if state[0][i] != -1 and state[0][i] < num:
-            count += 1
+        self.button = QtWidgets.QPushButton("Start!")
+        self.text = QtWidgets.QLabel("Masukkan kondisi awal pada tabel. Cell kosong direpresentasikan dengan angka 16. Asumsi input benar. Apabila solvable, pencet button start lagi untuk menunjukkan step")
+        self.table = QtWidgets.QTableWidget()
+        self.status = QtWidgets.QLabel("Status: Not Started")
+        self.result = QtWidgets.QTextEdit("")
 
-    return count
+        self.table.setRowCount(4)
+        self.table.setColumnCount(4)
+        self.result.setReadOnly(True)
 
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.addWidget(self.text)
+        layout.addWidget(self.button)
+        layout.addWidget(self.status)
+        layout.addWidget(self.result)
+        layout.addWidget(self.table)
 
-def sumKurang(state):
-    count = 0
-    for i in range(1, 17):
-        count += kurang(i, state)
-    return count
+        self.button.clicked.connect(self.magic)
 
-
-def findX(state):
-    shadowed = [1, 3, 4, 6, 9, 11, 12, 14]
-    for i in range(1, 16):
-        if state[0][i] == 16 and i in shadowed:
-            return 1
-    return 0
-
-
-def kurangPlusX(state):
-    return sumKurang(state) + findX(state)
-
-
-def solvable(state):
-    return kurangPlusX(state) % 2 == 0
-
-
-def costFuncG(matrix):
-    count = 0
-    for i in range(16):
-        if matrix[i] != i + 1 and matrix[i]!=16:
-            count += 1
-    return count
-
-
-def move(state, direction):
-    newMatrix = copy.deepcopy(state[0])
-
-    idx = -1
-    for i in range(16):
-        if newMatrix[i] == 16:
-            idx = i
-
-    idxTukar = -1
-    if direction == "top":
-        if idx < 4:
-            return newMatrix
-        idxTukar = idx - 4
-    elif direction == "bottom":
-        if idx > 11:
-            return newMatrix
-        idxTukar = idx + 4
-    elif direction == "left":
-        if idx % 4 == 0:
-            return newMatrix
-        idxTukar = idx - 1
-    elif direction == "right":
-        if (idx + 1) % 4 == 0:
-            return newMatrix
-        idxTukar = idx + 1
-
-    newMatrix[idx] = newMatrix[idxTukar]
-    newMatrix[idxTukar] = 16
-
-    return newMatrix
-
-def solve(initState):
-    start = time.perf_counter()
-
-    # Nilai fungsi Kurang(i) tiap ubin awal
-    for i in range(1, 17):
-        print("Kurang",i, kurang(i, initState))
+    def getTable(self):
+        matrix = []
+        matrix.append(int(self.table.item(0,0).text()))
+        matrix.append(int(self.table.item(0,1).text()))
+        matrix.append(int(self.table.item(0,2).text()))
+        matrix.append(int(self.table.item(0,3).text()))
+        matrix.append(int(self.table.item(1,0).text()))
+        matrix.append(int(self.table.item(1,1).text()))
+        matrix.append(int(self.table.item(1,2).text()))
+        matrix.append(int(self.table.item(1,3).text()))
+        matrix.append(int(self.table.item(2,0).text()))
+        matrix.append(int(self.table.item(2,1).text()))
+        matrix.append(int(self.table.item(2,2).text()))
+        matrix.append(int(self.table.item(2,3).text()))
+        matrix.append(int(self.table.item(3,0).text()))
+        matrix.append(int(self.table.item(3,1).text()))
+        matrix.append(int(self.table.item(3,2).text()))
+        matrix.append(int(self.table.item(3,3).text()))
+        return matrix
     
-    # Nilai sumKurang(i)+X
-    print()
-    print("sumKurang(i)+X =",kurangPlusX(initState))
-    print()
+    def setTable(self, matrix):
+        print(matrix)
+        self.table.item(0,0).setText(str(matrix[0]))
+        self.table.item(0,1).setText(str(matrix[1]))
+        self.table.item(0,2).setText(str(matrix[2]))
+        self.table.item(0,3).setText(str(matrix[3]))
+        self.table.item(1,0).setText(str(matrix[4]))
+        self.table.item(1,1).setText(str(matrix[5]))
+        self.table.item(1,2).setText(str(matrix[6]))
+        self.table.item(1,3).setText(str(matrix[7]))
+        self.table.item(2,0).setText(str(matrix[8]))
+        self.table.item(2,1).setText(str(matrix[9]))
+        self.table.item(2,2).setText(str(matrix[10]))
+        self.table.item(2,3).setText(str(matrix[11]))
+        self.table.item(3,0).setText(str(matrix[12]))
+        self.table.item(3,1).setText(str(matrix[13]))
+        self.table.item(3,2).setText(str(matrix[14]))
+        self.table.item(3,3).setText(str(matrix[15]))
+    
+    def setTextBox(self):
+        for i in range(1,17):
+            self.result.append("Kurang "+str(i)+ " = " +str(kurang(i, self.initState)))
+        
+        self.result.append("sumKurang(i)+X = "+ str(kurangPlusX(self.initState)))
 
-    prioQueue = prioqueue.PriorityQueue()
+    @QtCore.Slot()
+    def magic(self):
+        if self.isSolvable==False:
+            matrix = self.getTable()
+            self.status.setText("Status: Processing")
+            self.initState = (matrix, 0, 0+costFuncG(matrix), -1)
 
-    if solvable(initState) == False:
-        print("Jumlah simpul dibangkitkan =", prioQueue.simpulCount())
-        return "Unsolvable"
-
-    prioQueue.insert(initState)    
-    done = []
-
-    while prioQueue.isEmpty()==False:
-        currState = prioQueue.pop()
-        done.append(currState)
-
-        if solvable(currState):
-            if (currState[2] == currState[1]):
-                path = []
-                path.insert(0, currState)
-                while path[0][3]!=-1:
-                    path.insert(0, done[path[0][3]])
-
-                for i in range(len(path)):
-                    print(path[i][0])
-                
-                print()
-                print("Jumlah simpul dibangkitkan =", prioQueue.simpulCount())
-                print("Waktu =","{:.5f}".format(time.perf_counter()-start), "detik")
-                return "Yey"
-
-            newTop = move(currState, "top")
-            newBot = move(currState, "bottom")
-            newLeft = move(currState, "left")
-            newRight = move(currState, "right")
-
-            f = currState[1] + 1
-            gTop = costFuncG(newTop) if newTop not in done else 9999
-            gBot = costFuncG(newBot) if newBot not in done else 9999
-            gLeft = costFuncG(newLeft) if newLeft not in done else 9999
-            gRight = costFuncG(newRight) if newRight not in done else 9999
-
-            if gTop != 9999:
-                stateTop = (newTop, f, f + gTop, len(done)-1)
-                prioQueue.insert(stateTop)
-                # print(stateTop)
-            if gBot != 9999:
-                stateBot = (newBot, f, f + gBot, len(done)-1)
-                prioQueue.insert(stateBot)
-                # print(stateBot)
-            if gLeft != 9999:
-                stateLeft = (newLeft, f, f + gLeft,len(done)-1)
-                prioQueue.insert(stateLeft)
-                # print(stateLeft)
-            if gRight != 9999:
-                stateRight = (newRight, f, f + gRight,len(done)-1)
-                prioQueue.insert(stateRight)
-                # print(stateRight)
-            # print(prioQueue.length())          
-    print("Unknown Error")
+            self.setTextBox()
+            self.isSolvable = solve(self.initState, self.path, self.arrSimpulTime)
+            self.status.setText("Status: " + ("Solvable with time "+"{:.5f}".format(self.arrSimpulTime[1]) + " seconds and simpul count " + str(self.arrSimpulTime[0])) if self.isSolvable==True else "Unsolvable" )
+            if self.isSolvable==True:
+                del self.path[0]
+        elif len(self.path)>0:
+            self.setTable(self.path[0][0])
+            del self.path[0]
 
 if __name__ == '__main__':
-    matrix = [1,16,2,3,5,6,7,4,9,10,11,8,13,14,15,12]
-    # matrix = [3,5,6,4,1,16,12,15,13,2,10,7,14,9,11,8]
-    initState = (matrix, 0, 0+costFuncG(matrix), -1)
-    print(solve(initState))
+    app = QtWidgets.QApplication([])
+
+    widget = MyWidget()
+    widget.resize(800, 600)
+    widget.show()
+
+    sys.exit(app.exec())
