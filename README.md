@@ -23,7 +23,7 @@
 > Python terinstall di pc versi minimum 3.9 (tidak di test untuk versi dibawah ini)
 
 ## Perhatian
-> Program hanya dapat dijalankan di windows, tidak bisa di wsl
+> Program hanya dapat dijalankan di windows, tidak bisa di wsl <br>
 > Setelah digunakan, program harus ditutup dahulu baru dibuka kembali untuk reset. Tidak ada fitur reset dalam program
 
 ## How to Run
