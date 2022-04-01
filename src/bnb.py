@@ -98,19 +98,23 @@ def solve(initState, path, simpulTime):
         print("Jumlah simpul dibangkitkan =", prioQueue.simpulCount())
         return False
 
-    prioQueue.insert(initState)    
+    prioQueue.insert(initState)
+    allPath = []  
     done = []
+    inQueue = []
 
     while prioQueue.isEmpty()==False:
         currState = prioQueue.pop()
-        done.append(currState)
+        done.append(currState[0])
+        allPath.append(currState)
 
         if solvable(currState):
-            if (currState[2] == currState[1]):
+            if (currState[1]==currState[2]):
                 path.insert(0, currState)
                 while path[0][3]!=-1:
-                    path.insert(0, done[path[0][3]])
+                    path.insert(0, allPath[path[0][3]])
 
+                print("Here")
                 for i in range(len(path)):
                     print(path[i][0])
                 
@@ -122,27 +126,33 @@ def solve(initState, path, simpulTime):
                 simpulTime.append(time.perf_counter()-start)
                 return True
 
+            print(currState)
+            print(prioQueue.length())
             newTop = move(currState, "top")
             newBot = move(currState, "bottom")
             newLeft = move(currState, "left")
             newRight = move(currState, "right")
 
             f = currState[1] + 1
-            gTop = costFuncG(newTop) if newTop not in done else 9999
-            gBot = costFuncG(newBot) if newBot not in done else 9999
-            gLeft = costFuncG(newLeft) if newLeft not in done else 9999
-            gRight = costFuncG(newRight) if newRight not in done else 9999
+            gTop = costFuncG(newTop) if (newTop not in done) and (newTop not in inQueue) else -1
+            gBot = costFuncG(newBot) if (newBot not in done) and (newBot not in inQueue) else -1
+            gLeft = costFuncG(newLeft) if (newLeft not in done) and (newLeft not in inQueue) else -1
+            gRight = costFuncG(newRight) if (newRight not in done) and (newRight not in inQueue) else -1
 
-            if gTop != 9999:
+            if gTop != -1:
                 stateTop = (newTop, f, f + gTop, len(done)-1)
                 prioQueue.insert(stateTop)
-            if gBot != 9999:
+                inQueue.append(newTop)
+            if gBot != -1:
                 stateBot = (newBot, f, f + gBot, len(done)-1)
                 prioQueue.insert(stateBot)
-            if gLeft != 9999:
+                inQueue.append(newBot)
+            if gLeft -1:
                 stateLeft = (newLeft, f, f + gLeft,len(done)-1)
                 prioQueue.insert(stateLeft)
-            if gRight != 9999:
+                inQueue.append(newLeft)
+            if gRight != -1:
                 stateRight = (newRight, f, f + gRight,len(done)-1)
-                prioQueue.insert(stateRight)       
+                prioQueue.insert(stateRight)
+                inQueue.append(newRight)     
     print("Unknown Error")
