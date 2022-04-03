@@ -24,13 +24,15 @@
 
 ## Perhatian
 > Program hanya dapat dijalankan di windows, tidak bisa di wsl <br>
-> Setelah digunakan, program harus ditutup dahulu baru dibuka kembali untuk reset. Tidak ada fitur reset dalam program
+> Setelah digunakan, program harus ditutup dahulu baru dibuka kembali untuk reset. Tidak ada fitur reset dalam program <br>
+> Apabila menggunakan test case file txt, pastikan file txt harus 1 angka per baris seperti pada contoh test case <br>
 
 ## How to Run
 > 1. Masuk ke folder src `cd src`
 > 2. Install dependencies dengan menggunakan `pip install -r requirements.txt`
 > 3. Jalankan file main.py
-> 4. Untuk menggunakan input file txt, gunakan file selector di bagian bawah. Jangan takut apabila tabel tidak langsung berubah. Tabel baru berubah setelah start
+> 4. Untuk menggunakan input file txt, gunakan file selector di bagian bawah. Jangan takut apabila tabel tidak langsung berubah. Tabel baru berubah setelah start.
+> <br> Perhatikan bahwa file txt harus 1 angka per baris seperti pada contoh test case <br>
 > <br> <img src="readmePict/openFIle.png" width=300> <br>
 > Apabila tidak ingin menggunakan input file txt, pencet cancel for free real estate
 > <br> <img src="readmePict/cancelled.png" width=300> <br>
